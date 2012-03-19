@@ -1,0 +1,33 @@
+<html>
+
+  <head>
+    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+  </head>
+  
+  <body>
+  
+	{% if user %}
+		hello {{ user.nickname() }}  <a href="{{ url }}">Logout</a>
+    {% else %}
+		<a href="{{ url }}">Login</a>
+    {% endif %}
+   
+   <h2>Guest Book</h2>
+   
+    {% for greeting in greetings %}
+      {% if greeting.author %}
+        <b>{{ greeting.author.nickname() }}</b> wrote:
+      {% else %}
+        <b>anonymous</b> wrote:
+      {% endif %}
+      <blockquote>{{ greeting.content|escape }}</blockquote>
+    {% endfor %}
+
+	
+    <form action="/sign" method="post">
+      <div><textarea name="content" rows="3" cols="60"></textarea></div>
+      <div><input type="submit" value="Sign Guestbook"></div>
+    </form>
+
+  </body>
+</html>
