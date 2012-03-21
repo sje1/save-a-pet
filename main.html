@@ -1,16 +1,55 @@
+<!DOCTYPE html>
 <html>
 
   <head>
-    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+    <link type="text/css" rel="stylesheet" href="/css/main.css" />
   </head>
   
   <body>
   
 	{% if user %}
 		hello {{ user.nickname() }}  <a href="{{ url }}">Logout</a>
+
+	    {% for userOrg in userOrgs %}
+    		<br>Mine: <a href='/org/view?key={{ userOrg.parent().key() }}'>{{ userOrg.parent().name }}</a>
+	    {% endfor %}
+		
+	   <br><a href='/org/register'>Register My Organization</a>
     {% else %}
 		<a href="{{ url }}">Login</a>
     {% endif %}
+
+
+   <h2>Organizations</h2>
+
+    {% for org in orgs %}
+    	<br><a href='/org/view?key={{ org.key() }}'>{{ org.name }}</a>
+    {% endfor %}
+
+
+   <h2>Dogs</h2>
+    {% for dog in dogs %}
+    	<div id='dog{{ dog.key().id() }}'>
+	    	<div id='dogpicdrop{{ dog.key().id() }}' style='width:100px;height:100px;overflow:hidden;float:left;border:solid #eeeeee 1px;'>
+				<img id='img{{ dog.key().id() }}' 
+				{% if dog.pic %} 
+					src='/dog/pic?dog={{ dog.key() }}'
+			 	{% else %}
+			 		src=''
+			 	{% endif %}
+				style='width:100px;border:vertical-align:top;border:none;'>
+			</div>
+			
+			<div style='float:left;'>
+				<i>{{ dog.name }}</i>  ({{ dog.breed }})
+				<br><a href='/org/view?key={{ dog.parent().key() }}'>{{ dog.parent().name }}</a>
+				{% if dog.deathRow %}
+					<br><b>Death Row! {{ dog.deathRowDate }}</b> 
+			 	{% endif %}
+			</div>
+			<div style='clear:both;'></div>
+		</div>
+    {% endfor %}
    
    <h2>Guest Book</h2>
    
@@ -24,7 +63,7 @@
     {% endfor %}
 
 	
-    <form action="/sign" method="post">
+    <form action="/guestbook/sign" method="post">
       <div><textarea name="content" rows="3" cols="60"></textarea></div>
       <div><input type="submit" value="Sign Guestbook"></div>
     </form>

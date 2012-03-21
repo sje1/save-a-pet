@@ -14,8 +14,22 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
-- url: /stylesheets
-  static_dir: stylesheets
+- url: /robots\.txt
+  static_files: robots.txt
+  upload: robots\.txt
+  expiration: '1d'
+
+- url: /css
+  static_dir: css
+
+- url: /js
+  static_dir: js
+
+- url: /jQuery-File-Upload
+  static_dir: jQuery-File-Upload
+
+- url: /files/.*
+  script: fileupload.py
 
 - url: /.*
   script: main.py

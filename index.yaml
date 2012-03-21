@@ -10,8 +10,27 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Dog
+  ancestor: yes
+  properties:
+  - name: date
+    direction: desc
+
 - kind: Greeting
   ancestor: yes
   properties:
+  - name: date
+    direction: desc
+
+- kind: Organization
+  ancestor: yes
+  properties:
+  - name: date
+    direction: desc
+
+- kind: OrganizationUser
+  ancestor: yes
+  properties:
+  - name: orguser
   - name: date
     direction: desc

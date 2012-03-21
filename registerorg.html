@@ -1,0 +1,37 @@
+<html>
+
+  <head>
+    <link type="text/css" rel="stylesheet" href="/css/main.css" />
+  </head>
+  
+  <body>
+  
+	{% if user %}
+		hello {{ user.nickname() }}  <a href="{{ url }}">Logout</a>
+    {% else %}
+		<a href="{{ url }}">Login</a>
+    {% endif %}
+   
+   <h2>Register your Organization</h2>
+   
+    <form action="/org/registersubmit" method="post">
+		<div>Name:</div>
+		<div><input type='text' name='name' placeholder='my organization name' /></div>
+
+		<div>Description:</div>
+     	<div><textarea name="description" rows="5" cols="60"></textarea></div>
+
+		<div>Address:</div>
+     	<div><textarea name="address" rows="5" cols="60"></textarea></div>
+
+		<div>Phone:</div>
+		<div><input type='text' name='phone' placeholder='222-222-2222' /></div>
+
+		<div>Email:</div>
+		<div><input type='text' name='email' placeholder='admin@myorg.com' /></div>
+     	
+	    <div><input type="submit" value="Register"></div>
+    </form>
+
+  </body>
+</html>

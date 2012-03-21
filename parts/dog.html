@@ -1,0 +1,131 @@
+	   <div id='{{ dog.key().id() }}' style='position:relative; padding-bottom:10px;'>
+	   
+	    	<div id='dogpicdrop{{ dog.key().id() }}' 
+	    		style='width:100px;height:100px;overflow:hidden;float:left;border:solid #eeeeee 1px;'
+	    		
+				{% if userOrg %}
+			 		title='drag and drop a picture for this dog'
+			 	{% endif %}
+			
+	    		>
+
+			<img id='img{{ dog.key().id() }}' 
+			
+			{% if dog.pic %} 
+				src='/dog/pic?dog={{ dog.key() }}'
+		 	{% else %}
+		 		src=''
+		 	{% endif %}
+			 
+			style='width:100px;border:vertical-align:top;border:none;'>
+			
+			</div>
+			
+			{% if userOrg %}
+	    	<script>
+		      $("#dogpicdrop{{ dog.key().id() }}").bind({
+		    	  dragover: function(evt) {
+		    	  	$(this).addClass('hover');
+    				//evt.stopPropagation();
+    				//evt.preventDefault();
+    				//evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    				//$('#dogpicdrop{{ dog.key().id() }}').css('backgroundColor', '#00ff00');
+    				//$("#dogpicdrop{{ dog.key().id() }}").effect('pulsate', { times:3 }, 2000);
+    				return false; // prevents the default action from occurring and stops the event from bubbling.
+  				  },
+
+		    	  dragend: function(evt) {
+		    	  	$(this).addClass('hover');
+    				return false;
+  				  },
+  				
+		    	  drop: function(evt) {
+		    		//alert('here!');
+		    		
+					evt = evt || window.event;
+        			evt.preventDefault();
+			        // jQuery wraps the originalEvent, so we try to detect that here...
+        			evt = evt.originalEvent || evt;
+        			// Using e.files with fallback because e.dataTransfer is immutable and can't be overridden in Polyfills (http://sandbox.knarly.com/js/dropfiles/).            
+        			var files = (evt.files || evt.dataTransfer.files);
+        			
+        			if(files && files[0]){
+        			    reader = new FileReader();
+    					reader.onerror = function(e) {
+					      alert('error');
+					    };
+					    
+    					reader.onprogress = function(e) {
+					      //alert('progress');
+					    };
+					    
+					    reader.onabort = function(e) {
+					      alert('File read cancelled');
+					    };
+					    
+					    reader.onloadstart = function(e) {
+					      //document.getElementById('progress_bar').className = 'loading';
+					    };
+					    
+					    reader.onload = function(e) {
+					      // Ensure that the progress bar displays 100% at the end.
+					      //progress.style.width = '100%';
+					      //progress.textContent = '100%';
+					      //setTimeout("document.getElementById('progress_bar').className='';", 2000);
+					      
+					      // set as img
+					      result = reader.result;
+					      // result is: data:image/jpeg;base64,/9j/4AA....
+					      $("#img{{ dog.key().id() }}").attr('src', result);
+
+						  // upload to server
+						  postdata = 'dog={{ dog.key() }}&pic=' + encodeURIComponent(result);
+					      //alert('posting: ' + postdata);
+						  $.ajax({ url: "/dog/setpic", type: "post", data: postdata,
+				        		success: function(response, textStatus, jqXHR){
+									var myObject = eval('(' + jqXHR.responseText + ')');
+									//alert('done: ' + myObject);
+				        		},
+				        		// callback handler that will be called on error
+				        		error: function(jqXHR, textStatus, errorThrown){
+				            		// log the error to the console
+				            		console.log("'he following error occured: " + textStatus, errorThrown);
+									//alert('error: ' + textStatus + ': ' + errorThrown);
+									//var html = "Error: " + textStatus + ": " + errorThrown;
+									//$("#error").replaceWith(html);
+				        		},
+				        		// callback handler that will be called on completion
+				        		// which means, either on success or error
+				        		complete: function(){
+				            		// enable the inputs
+				            		//$inputs.removeAttr("disabled");
+				            		//$('#adddog').fadeIn('slow'); 
+				        		},
+				        	});
+					    }
+
+  						// Read in the image file as a binary string.
+  						// reader.readAsBinaryString(evt.target.files[0]);
+  						// Read in as base64 encoded binary data which browsers understand (can set to src, and also upload to server!
+  						//alert('reading ' + files[0].name); 
+  						reader.readAsDataURL(files[0]);
+        			}
+        			
+				    // files is a FileList of File objects. List some properties.
+    				//var output = [];
+    				//for (var i = 0, f; f = files[i]; i++) {
+    					//alert(f.name);
+      					//output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ', f.size, ' bytes, last modified: ', f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a', '</li>');
+				    //}
+    				//document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';  				}, false); //Setting the third argument to false will attach a function that prevents the default action from occurring and stops the event from bubbling.
+    				return false;
+  				  }
+  			  });
+	    	</script>
+	    	<!--<input id="dogpicinput" type="file" name="files[]" multiple>-->
+		 	{% endif %}
+	    	
+	   
+    		<div style='float:left;'>{{ dog.name }}  ({{ dog.breed }})</div>
+    		<div style='clear:both;'></div>
+       </div>

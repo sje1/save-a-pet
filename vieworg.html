@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta charset="utf-8">
+	<title>Organization</title>
+    <meta name="description" content="Shows an Organization.">
+	
+    <link type="text/css" rel="stylesheet" href="/css/main.css" />
+    <link type="text/css" href="/css/jquery-ui.css" rel="Stylesheet" />	
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/ui/minified/jquery-ui.min.js"></script>
+   
+  </head>
+  
+  <body>
+    
+	{% if user %}
+		hello {{ user.nickname() }}  <a href="{{ url }}">Logout</a> <a href="/">Home</a>
+    {% else %}
+		<a href="{{ url }}">Login</a>
+    {% endif %}
+   
+   <div id='{{ org.key().id_or_name() }}'>
+   <h2>{{ org.name }}</h2>
+   <br>{{ org.description }}
+   <br><address>{{ org.address }}</address>
+   <br><a href='mailto:{{ org.email }}'>{{ org.email }}</a>
+   <br><a target='_blank' href='{{ org.website }}'>{{ org.website }}</a>
+	
+   <p>
+   <h3>Dogs Available</h3>
+   
+   
+	{% if userOrg %}
+   
+   <div id='adddogid'>
+	<div id='addlink'>Add a dog</div>
+	<div id='error'></div>
+   
+   <form id='adddog'>
+     <input type='hidden' name='org' value='{{ org.key() }}'>
+     <input type='hidden' name='reply' value='dog'><!-- can put json or dog -->
+     <br>Name:
+     <br><input id='dogname' type='text' name='name' value='' placeholder='dog name'>
+     <br>Breed:
+     <br><select id='dogbreed' name='breed'>
+     	<option value='Greyhound'>Greyhound</option>
+     	<option value='Labrador'>Labrador</option>
+     	<option value='Kelpie'>Kelpie</option>
+		</select>
+	  <br>Death Row ?
+	  <script> $(function() { $( "#adddogdatepicker" ).datepicker(); }); </script>
+	  <br><input name='deathrowdate' type="text" id="adddogdatepicker" placeholder='date of euthanization'>
+	  <Br><input type='submit' value='add dog'>
+	</form>
+	
+	<script>
+		$("#adddog").hide();
+		$("#addlink").click(function() {
+  			var el = $("#adddog");
+  			if(!el.is(":visible")) el.slideDown(2000);
+  			else el.slideUp(2000);
+		});
+		
+		$("#adddog").submit(function(event){
+		    // setup some local variables
+    		var $form = $(this),
+        	// let's select and cache all the fields
+        	$inputs = $form.find("input, select, button, textarea"),
+        	dogname = $("#dogname").val(),
+        	breed = $("#dogbreed").val(),
+        	// serialize the data in the form
+        	serializedData = $form.serialize();
+        	
+    		// let's disable the inputs for the duration of the ajax request
+    		$inputs.attr("disabled", "disabled");
+
+    		// fire off the request
+    		$.ajax({ url: "/dog/addsubmit", type: "post", data: serializedData,
+        		// callback handler that will be called on success
+        		success: function(response, textStatus, jqXHR){
+					//var myObject = eval('(' + jqXHR.responseText + ')');
+					//var html = "<div id='" + myObject['id'] + "'>" + dogname + " (" + breed + ")";
+					var html = $(jqXHR.responseText);  
+					$("#dogs").prepend(html);
+					html.hide().slideDown(5000);
+        		},
+        		// callback handler that will be called on error
+        		error: function(jqXHR, textStatus, errorThrown){
+            		// log the error to the console
+            		console.log("The following error occured: " + textStatus, errorThrown);
+					var html = "Error: " + textStatus + ": " + errorThrown;
+					$("#error").replaceWith(html);
+        		},
+        		// callback handler that will be called on completion
+        		// which means, either on success or error
+        		complete: function(){
+            		// enable the inputs
+            		$inputs.removeAttr("disabled");
+            		$('#adddog').fadeIn('slow'); 
+        		}
+    		});
+
+    		// prevent default posting of form
+    		event.preventDefault();
+		});
+	</script>
+	</div>
+	{% endif %}
+	
+   <div id='dogs'>
+    {% for dog in dogs %}
+    	{% include "parts/dog.html" %}
+    {% endfor %}
+    </div>
+
+	
+
+  </body>
+</html>
